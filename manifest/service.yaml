@@ -1,0 +1,16 @@
+#config for dev bcaf
+apiVersion: v1
+kind: Service
+metadata:
+  name: engine-slik
+  labels:
+    app: engine-slik
+spec:
+  ports:
+  - name: http
+    port: 80
+    protocol: TCP
+    targetPort: 80
+  selector:
+    app: engine-slik
+  type: ClusterIP

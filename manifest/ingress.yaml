@@ -1,0 +1,17 @@
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: engine-slik
+  annotations:
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: 16m
+    kubernetes.io/ingress.class: "nginx"
+spec:
+  rules:
+  - host: engine-slik.idofocus.co.id
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: engine-slik
+          servicePort: 80

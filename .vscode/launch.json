@@ -1,0 +1,15 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-EngineSlikApplication<engine-slik>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "console": "internalConsole",
+            "mainClass": "com.bcafinance.appdisb.EngineSlikApplication",
+            "projectName": "engine-slik",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}

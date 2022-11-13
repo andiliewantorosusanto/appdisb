@@ -1,0 +1,61 @@
+stages:
+  - build
+  - package
+  - deploy
+
+cache:
+  paths:
+    - .m2/repository
+
+variables:
+  MAVEN_OPTS: "-Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository"
+
+build:
+  image: 10.10.30.37/base/maven:3.8.4-openjdk-17
+  stage: build
+  script: 
+    - mvn clean package -DskipTests
+  artifacts:
+    paths:
+      - target/*.jar
+    expire_in: 1 days
+  only:
+    - development
+  tags:
+    - ME-ENGINE-SLIK-DOCKER
+   
+package:    
+  stage: package
+  image: 10.10.30.37/base/docker:latest
+  services:
+    - name: 10.10.30.37/base/docker:dind
+  script:
+    - docker info
+    - docker login -u "${CI_REGISTRY_USER}" -p "${CI_REGISTRY_PASSWORD}" 10.10.30.37
+    - docker build -t "${CI_REGISTRY_IMAGE}:latest" .
+    - docker tag "${CI_REGISTRY_IMAGE}:latest" "${CI_REGISTRY_IMAGE}:$CI_BUILD_REF"
+    - docker push "${CI_REGISTRY_IMAGE}:latest"
+    - docker push "${CI_REGISTRY_IMAGE}:$CI_BUILD_REF"
+  only:
+    - development
+  tags:
+    - ME-ENGINE-SLIK-DOCKER
+
+deploy:
+  stage: deploy
+  script: 
+    - kubectl version
+    - cd manifest/
+    - docker login -u "${CI_REGISTRY_USER}" -p "${CI_REGISTRY_PASSWORD}" 10.10.30.37
+    - sed -i "s,__IMAGE__:__VERSION__,${CI_REGISTRY_IMAGE}:$CI_BUILD_REF," deployment.yaml
+    - kubectl apply -f deployment.yaml -n mobile-entry-bcaf
+    - kubectl apply -f service.yaml -n mobile-entry-bcaf
+    - kubectl apply -f ingress.yaml -n mobile-entry-bcaf
+    - kubectl rollout status -f deployment.yaml -n mobile-entry-bcaf
+    - kubectl get all,ing  -n mobile-entry-bcaf
+  only:
+    - development
+  tags:
+    - ME-ENGINE-SLIK-SHELL 
+
+
