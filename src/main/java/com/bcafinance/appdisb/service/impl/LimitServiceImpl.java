@@ -12,35 +12,35 @@ import org.springframework.stereotype.Service;
 import com.bcafinance.appdisb.http.Meta;
 import com.bcafinance.appdisb.http.Request;
 import com.bcafinance.appdisb.http.Response;
-import com.bcafinance.appdisb.model.user.User;
-import com.bcafinance.appdisb.model.user.UserRepository;
-import com.bcafinance.appdisb.service.UserService;
+import com.bcafinance.appdisb.model.limit.Limit;
+import com.bcafinance.appdisb.model.limit.LimitRepository;
+import com.bcafinance.appdisb.service.LimitService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Service @RequiredArgsConstructor @Transactional @Slf4j
-public class UserServiceImpl implements UserService{
-    private final UserRepository userRepository;
+public class LimitServiceImpl implements LimitService{
+    private final LimitRepository limitRepository;
 
     @Override
-    public User saveUser(User user) {
-        log.info("Saving User {} to the database",user.getName());
-        return userRepository.save(user);
+    public Limit saveLimit(Limit limit) {
+        log.info("Saving Limit {} to the database",limit.getName());
+        return limitRepository.save(limit);
     }
 
     @Override
-    public User getUser(String username) {
-        log.info("Fetching user {}",username);
-        return userRepository.findByUsername(username);
+    public Limit getLimit(String name) {
+        log.info("Fetching limit {}",name);
+        return limitRepository.findByName(name);
     }
 
     @Override
-    public Response<List<User>> getUsers(Request req) {
-        Response<List<User>> res = new Response<List<User>>();
+    public Response<List<Limit>> getLimits(Request req) {
+        Response<List<Limit>> res = new Response<List<Limit>>();
         try {
             Pageable firstPageWithTwoElements = PageRequest.of(req.getPage(), req.getSize());
-            Page<User> p = userRepository.findAll(firstPageWithTwoElements);
+            Page<Limit> p = limitRepository.findAll(firstPageWithTwoElements);
             Meta meta = new Meta(p.getNumber(),p.getTotalPages(),p.getSize(),p.getTotalElements());
             res.setSuccess(p.getContent(), meta);
         } catch (Exception e) {

@@ -12,35 +12,35 @@ import org.springframework.stereotype.Service;
 import com.bcafinance.appdisb.http.Meta;
 import com.bcafinance.appdisb.http.Request;
 import com.bcafinance.appdisb.http.Response;
-import com.bcafinance.appdisb.model.user.User;
-import com.bcafinance.appdisb.model.user.UserRepository;
-import com.bcafinance.appdisb.service.UserService;
+import com.bcafinance.appdisb.model.menu.Menu;
+import com.bcafinance.appdisb.model.menu.MenuRepository;
+import com.bcafinance.appdisb.service.MenuService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Service @RequiredArgsConstructor @Transactional @Slf4j
-public class UserServiceImpl implements UserService{
-    private final UserRepository userRepository;
+public class MenuServiceImpl implements MenuService{
+    private final MenuRepository menuRepository;
 
     @Override
-    public User saveUser(User user) {
-        log.info("Saving User {} to the database",user.getName());
-        return userRepository.save(user);
+    public Menu saveMenu(Menu menu) {
+        log.info("Saving Menu {} to the database",menu.getName());
+        return menuRepository.save(menu);
     }
 
     @Override
-    public User getUser(String username) {
-        log.info("Fetching user {}",username);
-        return userRepository.findByUsername(username);
+    public Menu getMenu(String name) {
+        log.info("Fetching menu {}",name);
+        return menuRepository.findByName(name);
     }
 
     @Override
-    public Response<List<User>> getUsers(Request req) {
-        Response<List<User>> res = new Response<List<User>>();
+    public Response<List<Menu>> getMenus(Request req) {
+        Response<List<Menu>> res = new Response<List<Menu>>();
         try {
             Pageable firstPageWithTwoElements = PageRequest.of(req.getPage(), req.getSize());
-            Page<User> p = userRepository.findAll(firstPageWithTwoElements);
+            Page<Menu> p = menuRepository.findAll(firstPageWithTwoElements);
             Meta meta = new Meta(p.getNumber(),p.getTotalPages(),p.getSize(),p.getTotalElements());
             res.setSuccess(p.getContent(), meta);
         } catch (Exception e) {
